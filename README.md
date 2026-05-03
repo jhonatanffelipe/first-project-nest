@@ -2,21 +2,20 @@
 
 Este projeto foi desenvolvido seguindo a Masterclass da Rocketseat sobre NestJS, focando na construção de uma API robusta, escalável e tipada utilizando Prisma ORM.
 
-## 🚀 Tecnologias
+## Tecnologias
 
 - [NestJS](https://nestjs.com/) - Framework Node.js progressivo.
 - [Prisma](https://www.prisma.io/) - ORM de nova geração para Node.js e TypeScript.
 - [SQLite](https://www.sqlite.org/) - Banco de dados leve para desenvolvimento.
+- [Swagger](https://swagger.io/) - Documentação automática da API via `@nestjs/swagger`.
 - [Class Validator & Transformer](https://github.com/typestack/class-validator) - Validação de dados de entrada.
 
-## 📋 Pré-requisitos
-
-Antes de começar, você precisará ter instalado em sua máquina:
+## Pré-requisitos
 
 - Node.js (v16 ou superior)
 - npm, yarn ou pnpm
 
-## 🔧 Configuração e Instalação
+## Configuração e Instalação
 
 1. **Clone o repositório:**
 
@@ -31,63 +30,101 @@ Antes de começar, você precisará ter instalado em sua máquina:
    yarn
    ```
 
-3. **Configure o Prisma:**
+3. **Configure as variáveis de ambiente:**
 
-   O projeto utiliza SQLite por padrão. Inicialize o Prisma e gere as migrações:
+   Crie um arquivo `.env` na raiz do projeto:
+
+   ```env
+   PORT=3000
+   DATABASE_URL="file:./dev.db"
+   ```
+
+4. **Execute as migrações do banco:**
 
    ```bash
    npx prisma migrate dev --name init
    ```
 
-4. **Inicie o servidor:**
+5. **Inicie o servidor:**
 
    ```bash
-   npm run start:dev
+   yarn start:dev
    ```
 
-## 🛠️ Utilizando o Prisma no Projeto
+A API estará disponível em `http://localhost:3000` e a documentação Swagger em `http://localhost:3000/api/docs`.
 
-### 1. Definindo o Schema
+## Estrutura do Projeto
 
-O arquivo principal de configuração do banco está em `prisma/schema.prisma`. Para adicionar novos modelos:
-
-```prisma
-model Member {
-  id       String @id
-  name     String
-  function String
-}
+```
+src/
+├── app.module.ts                        # Módulo raiz da aplicação
+├── main.ts                              # Bootstrap da aplicação (Swagger, pipes globais)
+│
+├── common/                              # Utilitários e recursos compartilhados
+│   ├── errors/
+│   │   └── app.error.ts                # Classe AppError (estende HttpException)
+│   └── filtes/
+│       └── http-exception.filter.ts    # Filtro global de exceções HTTP
+│
+├── database/
+│   └── prisma.service.ts               # PrismaService (injeção de dependência)
+│
+└── modules/
+    └── team-members/                   # Módulo de membros do time
+        ├── team-members.module.ts
+        ├── team-members.controller.ts
+        ├── team-members.service.ts
+        ├── dtos/
+        │   ├── create-team-member-body.dto.ts
+        │   └── create-team-member-response.dto.ts
+        └── repositories/
+            ├── team-members.repository.ts          # Contrato abstrato
+            └── prisma/
+                └── prisma-team-members.repository.ts  # Implementação com Prisma
 ```
 
-### 2. Prisma Service
+## Arquitetura e Padrões
 
-Para utilizar o Prisma dentro do NestJS, foi criado um `PrismaService` que estende o `PrismaClient` para facilitar a injeção de dependência:
+- **Inversão de Dependência:** Repositórios são definidos como classes abstratas, permitindo trocar a implementação (ex: Prisma → TypeORM) sem alterar a lógica de negócio.
+- **Módulos por domínio:** Cada domínio (ex: `team-members`) agrupa controller, service, DTOs e repositórios em seu próprio módulo.
+- **DTOs com validação:** `class-validator` e `class-transformer` validam e tipam o corpo das requisições via `ValidationPipe` global.
+- **Tratamento de erros centralizado:** `AppError` e `HttpExceptionFilter` padronizam as respostas de erro da API.
+- **Documentação automática:** Swagger configurado globalmente com `@nestjs/swagger`, decoradores `@ApiTags`, `@ApiProperty` e `@ApiCreatedResponse` nos endpoints.
 
-- Localizado em: `src/database/prisma.service.ts`
+## Rotas da API
 
-### 3. Gerenciando o Banco (Prisma Studio)
+### `POST /team-members`
 
-Para visualizar e editar os dados do banco de dados de forma visual, execute:
+Cria um novo membro no time.
 
-```bash
-npx prisma studio
-```
-
-## 🏗️ Arquitetura e Padrões
-
-- **Inversão de Dependência:** O projeto utiliza classes abstratas para definir contratos de repositórios, permitindo trocar a implementação do banco de dados (ex: trocar Prisma por TypeORM) sem afetar a lógica de negócio.
-- **DTOs:** Utilizados para tipar e validar o corpo das requisições HTTP (`@Body()`).
-- **Validation Pipes:** Configuração global para capturar erros de validação automaticamente.
-
-## 🛣️ Rotas Principais
-
-### `POST /app/hello`
-
-Cria um novo membro no time (Exemplo da aula).
-
+**Request body:**
 ```json
 {
-  "name": "Diego Fernandes",
-  "function": "CTO"
+  "name": "Jhonatan Nascimento",
+  "function": "CEO"
 }
+```
+
+**Response `201`:**
+```json
+{
+  "id": "uuid",
+  "name": "Jhonatan Nascimento",
+  "function": "CEO"
+}
+```
+
+> Retorna `400` se já existir um membro com o mesmo nome.
+
+## Comandos Úteis
+
+```bash
+# Desenvolvimento com hot-reload
+yarn start:dev
+
+# Visualizar o banco de dados
+npx prisma studio
+
+# Gerar o client Prisma após alterar o schema
+npx prisma generate
 ```

@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { PrismaService } from './database/prisma.service';
-import { TeamMembersRepository } from './repositories/TeamMembersRepository';
-import { PrismaTeamMembersRepository } from './repositories/prisma/PrismaTeamMembersRepository';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './common/filtes/http-exception.filter';
+import { TeamMembersModule } from './modules/team-members/team-members.module';
 
 @Module({
   imports: [
@@ -11,13 +10,12 @@ import { PrismaTeamMembersRepository } from './repositories/prisma/PrismaTeamMem
       isGlobal: true,
       envFilePath: '.env',
     }),
+    TeamMembersModule,
   ],
-  controllers: [AppController],
   providers: [
-    PrismaService,
     {
-      provide: TeamMembersRepository,
-      useClass: PrismaTeamMembersRepository,
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
     },
   ],
 })
