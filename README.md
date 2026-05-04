@@ -1,18 +1,18 @@
-# NestJS + Prisma Masterclass
+# first-project-nest
 
-Este projeto foi desenvolvido seguindo a Masterclass da Rocketseat sobre NestJS, focando na construção de uma API robusta, escalável e tipada utilizando Prisma ORM.
+Meu primeiro projeto com NestJS — desenvolvido para aprender e explorar o ecossistema do framework, aplicando boas práticas de arquitetura como Clean Architecture, padrão Repository e separação por use cases.
 
 ## Tecnologias
 
-- [NestJS](https://nestjs.com/) - Framework Node.js progressivo.
-- [Prisma](https://www.prisma.io/) - ORM de nova geração para Node.js e TypeScript.
-- [SQLite](https://www.sqlite.org/) - Banco de dados leve para desenvolvimento.
-- [Swagger](https://swagger.io/) - Documentação automática da API via `@nestjs/swagger`.
-- [Class Validator & Transformer](https://github.com/typestack/class-validator) - Validação de dados de entrada.
+- [NestJS](https://nestjs.com/) — Framework Node.js progressivo e modular.
+- [Prisma](https://www.prisma.io/) — ORM de nova geração para Node.js e TypeScript.
+- [SQLite](https://www.sqlite.org/) — Banco de dados leve para desenvolvimento local.
+- [Swagger](https://swagger.io/) — Documentação automática da API via `@nestjs/swagger`.
+- [Class Validator & Transformer](https://github.com/typestack/class-validator) — Validação e transformação de dados de entrada.
 
 ## Pré-requisitos
 
-- Node.js (v16 ou superior)
+- Node.js (v18 ou superior)
 - npm, yarn ou pnpm
 
 ## Configuração e Instalação
@@ -20,8 +20,8 @@ Este projeto foi desenvolvido seguindo a Masterclass da Rocketseat sobre NestJS,
 1. **Clone o repositório:**
 
    ```bash
-   git clone https://github.com/jhonatanffelipe/masterclass-nest.git
-   cd masterclass-nest
+   git clone https://github.com/jhonatanffelipe/first-project-nest.git
+   cd first-project-nest
    ```
 
 2. **Instale as dependências:**
@@ -58,63 +58,60 @@ A API estará disponível em `http://localhost:3000` e a documentação Swagger 
 ```
 src/
 ├── app.module.ts                        # Módulo raiz da aplicação
-├── main.ts                              # Bootstrap da aplicação (Swagger, pipes globais)
+├── main.ts                              # Bootstrap (Swagger, pipes globais)
 │
-├── common/                              # Utilitários e recursos compartilhados
+├── common/                              # Utilitários compartilhados entre módulos
+│   ├── dtos/
+│   │   ├── pagination.dto.ts            # Parâmetros de paginação (page, limit, sort)
+│   │   ├── pagination-response.dto.ts   # Wrapper genérico de resposta paginada
+│   │   └── default-filters.dto.ts       # Filtros comuns (filterField, filterValue)
 │   ├── errors/
-│   │   └── app.error.ts                # Classe AppError (estende HttpException)
+│   │   └── app.error.ts                 # AppError: exceção customizada com contexto
 │   └── filtes/
-│       └── http-exception.filter.ts    # Filtro global de exceções HTTP
+│       └── http-exception.filter.ts     # Filtro global de exceções HTTP
 │
 ├── database/
-│   └── prisma.service.ts               # PrismaService (injeção de dependência)
+│   └── prisma.service.ts                # PrismaService com injeção de dependência
 │
 └── modules/
-    └── team-members/                   # Módulo de membros do time
+    └── team-members/                    # Módulo de membros do time
         ├── team-members.module.ts
-        ├── team-members.controller.ts
-        ├── team-members.service.ts
         ├── dtos/
         │   ├── create-team-member-body.dto.ts
         │   └── create-team-member-response.dto.ts
-        └── repositories/
-            ├── team-members.repository.ts          # Contrato abstrato
-            └── prisma/
-                └── prisma-team-members.repository.ts  # Implementação com Prisma
+        ├── repositories/
+        │   ├── team-members.repository.ts           # Contrato abstrato (interface)
+        │   └── prisma/
+        │       └── prisma-team-members.repository.ts # Implementação com Prisma
+        └── use-cases/
+            ├── create-team-member/
+            │   ├── create-team-member.controller.ts
+            │   └── create-team-member.service.ts
+            ├── find-all-team-members/
+            │   ├── find-all-team-members.controller.ts
+            │   └── find-all-team-members.service.ts
+            └── find-team-member-by-id/
+                ├── find-team-member-by-id.controller.ts
+                └── find-team-member-by-id.service.ts
 ```
 
 ## Arquitetura e Padrões
 
-- **Inversão de Dependência:** Repositórios são definidos como classes abstratas, permitindo trocar a implementação (ex: Prisma → TypeORM) sem alterar a lógica de negócio.
-- **Módulos por domínio:** Cada domínio (ex: `team-members`) agrupa controller, service, DTOs e repositórios em seu próprio módulo.
-- **DTOs com validação:** `class-validator` e `class-transformer` validam e tipam o corpo das requisições via `ValidationPipe` global.
-- **Tratamento de erros centralizado:** `AppError` e `HttpExceptionFilter` padronizam as respostas de erro da API.
-- **Documentação automática:** Swagger configurado globalmente com `@nestjs/swagger`, decoradores `@ApiTags`, `@ApiProperty` e `@ApiCreatedResponse` nos endpoints.
+- **Use Cases:** cada operação de negócio possui seu próprio par controller/service, tornando o código isolado, testável e fácil de estender.
+- **Repository Pattern:** repositórios são definidos como classes abstratas, desacoplando a lógica de negócio da implementação de banco de dados (hoje Prisma, amanhã qualquer outro).
+- **Módulos por domínio:** cada domínio agrupa seus use cases, DTOs e repositórios em um único módulo coeso.
+- **DTOs com validação:** `class-validator` e `class-transformer` validam e tipam as requisições via `ValidationPipe` global.
+- **Tratamento de erros centralizado:** `AppError` e `HttpExceptionFilter` padronizam todas as respostas de erro da API.
+- **Paginação e filtros genéricos:** DTOs reutilizáveis de paginação (`page`, `limit`, `sortBy`, `sortOrder`) e filtragem dinâmica disponíveis para qualquer módulo.
+- **Documentação automática:** Swagger com `@nestjs/swagger`, decoradores `@ApiTags`, `@ApiProperty` e respostas tipadas em todos os endpoints.
 
 ## Rotas da API
 
-### `POST /team-members`
+A documentação completa e interativa de todos os endpoints está disponível via Swagger UI:
 
-Cria um novo membro no time.
+**[http://localhost:3000/api/docs](http://localhost:3000/api/docs)**
 
-**Request body:**
-```json
-{
-  "name": "Jhonatan Nascimento",
-  "function": "CEO"
-}
-```
-
-**Response `201`:**
-```json
-{
-  "id": "uuid",
-  "name": "Jhonatan Nascimento",
-  "function": "CEO"
-}
-```
-
-> Retorna `400` se já existir um membro com o mesmo nome.
+Lá você encontra todos os recursos, parâmetros, exemplos de request/response e pode testar as rotas diretamente pelo navegador.
 
 ## Comandos Úteis
 
@@ -122,9 +119,12 @@ Cria um novo membro no time.
 # Desenvolvimento com hot-reload
 yarn start:dev
 
-# Visualizar o banco de dados
+# Visualizar o banco de dados no browser
 npx prisma studio
 
 # Gerar o client Prisma após alterar o schema
 npx prisma generate
+
+# Criar nova migration
+npx prisma migrate dev --name <nome-da-migration>
 ```
