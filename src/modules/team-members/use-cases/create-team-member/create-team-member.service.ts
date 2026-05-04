@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AppError } from '../../../../common/errors/app.error';
 import { CreateTeamMemberBody } from '../../dtos/create-team-member-body.dto';
-import { CreateTeamMemberResponse } from '../../dtos/create-team-member-response.dto';
+import { TeamMemberResponse } from '../../dtos/team-member-response.dto';
 import { TeamMembersRepository } from '../../repositories/team-members.repository';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class CreateTeamMemberService {
   public async create({
     name,
     function: memberFunction,
-  }: CreateTeamMemberBody): Promise<CreateTeamMemberResponse> {
+  }: CreateTeamMemberBody): Promise<TeamMemberResponse> {
     const existingTeamMember =
       await this.teamMembersRepository.findByName(name);
 

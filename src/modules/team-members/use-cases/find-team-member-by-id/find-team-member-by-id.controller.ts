@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { CreateTeamMemberResponse } from '../../dtos/create-team-member-response.dto';
+import { TeamMemberResponse } from '../../dtos/team-member-response.dto';
 import { FindTeamMemberByIdService } from './find-team-member-by-id.service';
 
 @ApiTags('team-members')
@@ -10,12 +10,10 @@ export class FindTeamMemberByIdController {
 
   @Get(':id')
   @ApiOkResponse({
-    type: CreateTeamMemberResponse,
+    type: TeamMemberResponse,
     description: 'Team member retrieved successfully',
   })
-  public async findById(
-    @Param('id') id: string,
-  ): Promise<CreateTeamMemberResponse> {
+  public async findById(@Param('id') id: string): Promise<TeamMemberResponse> {
     return await this.findTeamMemberByIdService.findById(id);
   }
 }

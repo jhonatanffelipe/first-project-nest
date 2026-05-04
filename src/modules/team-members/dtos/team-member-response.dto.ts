@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateTeamMemberResponse {
+export class TeamMemberResponse {
   @ApiProperty({ description: 'Unique identifier of the team member' })
   id: string;
 

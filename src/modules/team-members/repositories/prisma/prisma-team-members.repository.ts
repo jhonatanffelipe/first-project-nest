@@ -4,7 +4,7 @@ import { DefaultFiltersDto } from '../../../../common/dtos/default-filters.dto';
 import { PaginationResponseDto } from '../../../../common/dtos/pagination-response.dto';
 import { PaginationDto } from '../../../../common/dtos/pagination.dto';
 import { PrismaService } from '../../../../database/prisma.service';
-import { CreateTeamMemberResponse } from '../../dtos/create-team-member-response.dto';
+import { TeamMemberResponse } from '../../dtos/team-member-response.dto';
 import { TeamMembersRepository } from '../team-members.repository';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class PrismaTeamMembersRepository implements TeamMembersRepository {
   public async create(data: {
     name: string;
     function: string;
-  }): Promise<CreateTeamMemberResponse> {
+  }): Promise<TeamMemberResponse> {
     const teamMember = await this.prismaService.teamMember.create({
       data: {
         id: randomUUID(),
@@ -30,7 +30,7 @@ export class PrismaTeamMembersRepository implements TeamMembersRepository {
     };
   }
 
-  public async findById(id: string): Promise<CreateTeamMemberResponse | null> {
+  public async findById(id: string): Promise<TeamMemberResponse | null> {
     const teamMember = await this.prismaService.teamMember.findUnique({
       where: { id },
     });
@@ -46,9 +46,7 @@ export class PrismaTeamMembersRepository implements TeamMembersRepository {
     };
   }
 
-  public async findByName(
-    name: string,
-  ): Promise<CreateTeamMemberResponse | null> {
+  public async findByName(name: string): Promise<TeamMemberResponse | null> {
     const teamMember = await this.prismaService.teamMember.findFirst({
       where: { name },
     });
@@ -64,10 +62,38 @@ export class PrismaTeamMembersRepository implements TeamMembersRepository {
     };
   }
 
+  public async update(
+    id: string,
+    data: { name?: string; function?: string },
+  ): Promise<TeamMemberResponse> {
+    const teamMember = await this.prismaService.teamMember.update({
+      where: { id },
+      data,
+    });
+
+    return {
+      id: teamMember.id,
+      name: teamMember.name,
+      function: teamMember.function,
+    };
+  }
+
+  public async delete(id: string): Promise<TeamMemberResponse> {
+    const teamMember = await this.prismaService.teamMember.delete({
+      where: { id },
+    });
+
+    return {
+      id: teamMember.id,
+      name: teamMember.name,
+      function: teamMember.function,
+    };
+  }
+
   public async findAll(
     pagination: PaginationDto,
     filter: DefaultFiltersDto,
-  ): Promise<PaginationResponseDto<CreateTeamMemberResponse>> {
+  ): Promise<PaginationResponseDto<TeamMemberResponse>> {
     const { page, limit, sortBy, sortOrder } = pagination;
     const { filterField, filterValue } = filter;
     const skip = (Number(page) - 1) * Number(limit);

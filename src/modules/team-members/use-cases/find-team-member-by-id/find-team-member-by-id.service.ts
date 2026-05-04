@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { AppError } from '../../../../common/errors/app.error';
-import { CreateTeamMemberResponse } from '../../dtos/create-team-member-response.dto';
+import { TeamMemberResponse } from '../../dtos/team-member-response.dto';
 import { TeamMembersRepository } from '../../repositories/team-members.repository';
 
 @Injectable()
 export class FindTeamMemberByIdService {
   constructor(private teamMembersRepository: TeamMembersRepository) {}
 
-  public async findById(id: string): Promise<CreateTeamMemberResponse> {
+  public async findById(id: string): Promise<TeamMemberResponse> {
     const teamMember = await this.teamMembersRepository.findById(id);
 
     if (!teamMember) {
