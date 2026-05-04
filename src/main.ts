@@ -14,8 +14,8 @@ async function bootstrap() {
   const port = configureService.get<number>('PORT', 3000);
 
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('MasterClass API')
-    .setDescription('API to manage the MasterClass application')
+    .setTitle('First API with NestJS')
+    .setDescription('API to manage the First API with NestJS application')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
