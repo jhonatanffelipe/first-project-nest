@@ -19,7 +19,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const status =
       exception instanceof AppError
-        ? HttpStatus.BAD_REQUEST
+        ? exception.getStatus()
         : exception instanceof HttpException
           ? exception.getStatus()
           : HttpStatus.INTERNAL_SERVER_ERROR;
