@@ -6,7 +6,7 @@ import {
   PaginationResponseDto,
 } from '../../../../common/dtos/pagination-response.dto';
 import { PaginationDto } from '../../../../common/dtos/pagination.dto';
-import { CreateTeamMemberResponse } from '../../dtos/create-team-member-response.dto';
+import { TeamMemberResponse } from '../../dtos/team-member-response.dto';
 import { FindAllTeamMembersService } from './find-all-team-members.service';
 
 @ApiTags('team-members')
@@ -16,13 +16,13 @@ export class FindAllTeamMembersController {
 
   @Get()
   @ApiOkResponse({
-    type: PaginatedDto(CreateTeamMemberResponse),
+    type: PaginatedDto(TeamMemberResponse),
     description: 'List of team members retrieved successfully',
   })
   public async findAll(
     @Query() pagination: PaginationDto,
     @Query() filter: DefaultFiltersDto,
-  ): Promise<PaginationResponseDto<CreateTeamMemberResponse>> {
+  ): Promise<PaginationResponseDto<TeamMemberResponse>> {
     return await this.findAllTeamMembersService.findAll(pagination, filter);
   }
 }

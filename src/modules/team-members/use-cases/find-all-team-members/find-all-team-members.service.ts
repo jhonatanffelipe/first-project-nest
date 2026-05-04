@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DefaultFiltersDto } from '../../../../common/dtos/default-filters.dto';
 import { PaginationResponseDto } from '../../../../common/dtos/pagination-response.dto';
 import { PaginationDto } from '../../../../common/dtos/pagination.dto';
-import { CreateTeamMemberResponse } from '../../dtos/create-team-member-response.dto';
+import { TeamMemberResponse } from '../../dtos/team-member-response.dto';
 import { TeamMembersRepository } from '../../repositories/team-members.repository';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class FindAllTeamMembersService {
   public async findAll(
     pagination: PaginationDto,
     filter: DefaultFiltersDto,
-  ): Promise<PaginationResponseDto<CreateTeamMemberResponse>> {
+  ): Promise<PaginationResponseDto<TeamMemberResponse>> {
     return await this.teamMembersRepository.findAll(pagination, filter);
   }
 }

@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { CreateTeamMemberBody } from '../../dtos/create-team-member-body.dto';
-import { CreateTeamMemberResponse } from '../../dtos/create-team-member-response.dto';
+import { TeamMemberResponse } from '../../dtos/team-member-response.dto';
 import { CreateTeamMemberService } from './create-team-member.service';
 
 @ApiTags('team-members')
@@ -11,12 +11,12 @@ export class CreateTeamMemberController {
 
   @Post()
   @ApiCreatedResponse({
-    type: CreateTeamMemberResponse,
+    type: TeamMemberResponse,
     description: 'Team member created successfully',
   })
   public async createTeamMember(
     @Body() body: CreateTeamMemberBody,
-  ): Promise<CreateTeamMemberResponse> {
+  ): Promise<TeamMemberResponse> {
     const { name, function: memberFunction } = body;
 
     const teamMember = await this.createTeamMemberService.create({
