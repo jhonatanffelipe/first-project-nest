@@ -57,5 +57,8 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 /src/generated/prisma
 
+# Database
+dev.db
+
 # Claude Code
 CLAUDE.md
