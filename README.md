@@ -1,130 +1,110 @@
-# first-project-nest
+# 🚀 First API Nest
 
-Meu primeiro projeto com NestJS — desenvolvido para aprender e explorar o ecossistema do framework, aplicando boas práticas de arquitetura como Clean Architecture, padrão Repository e separação por use cases.
+<p align="center">
+  <img src="https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" alt="NestJS" />
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white" alt="Prisma" />
+  <img src="https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite" />
+  <img src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" alt="Swagger" />
+</p>
 
-## Tecnologias
+## 📝 Descrição
 
-- [NestJS](https://nestjs.com/) — Framework Node.js progressivo e modular.
-- [Prisma](https://www.prisma.io/) — ORM de nova geração para Node.js e TypeScript.
-- [SQLite](https://www.sqlite.org/) — Banco de dados leve para desenvolvimento local.
-- [Swagger](https://swagger.io/) — Documentação automática da API via `@nestjs/swagger`.
-- [Class Validator & Transformer](https://github.com/typestack/class-validator) — Validação e transformação de dados de entrada.
+Este repositório é o meu **campo de treinamento pessoal** para o ecossistema NestJS. Ele nasceu do desejo de tirar a teoria do papel e entender, na prática, como o framework funciona "sob o capô".
 
-## Pré-requisitos
+Por ser o meu **primeiro contato com NestJS**, foquei menos em funcionalidades complexas e mais em **consolidar os alicerces**: como os módulos se conversam, como funciona a injeção de dependências e como organizar um código que não se torne uma bagunça conforme cresce. Aqui, usei o gerenciamento de membros de equipe como uma desculpa para aplicar conceitos de **Clean Architecture** e **Repository Pattern**, aprendendo a separar o que é regra de negócio do que é apenas banco de dados.
 
-- Node.js (v18 ou superior)
-- npm, yarn ou pnpm
+É, acima de tudo, um **registro da minha evolução** e um laboratório para testar padrões de desenvolvimento modernos.
 
-## Configuração e Instalação
+## ✨ Funcionalidades (O que aprendi/implementei)
 
-1. **Clone o repositório:**
+- **Fundamentos do NestJS:** Criação de módulos, controladores e serviços.
+- **Integração com Banco de Dados:** Uso do **Prisma ORM** com **SQLite** para persistência simples e eficiente.
+- **Gerenciamento de Membros:** CRUD completo (Criar, Listar, Buscar por ID, Atualizar e Deletar).
+- **Arquitetura Limpa:** Separação entre a infraestrutura (Prisma) e as regras de negócio.
+- **Paginação e Filtros:** Implementação de listagem inteligente com parâmetros de busca.
+- **Documentação Automática:** Configuração do **Swagger** para visualizar e testar as rotas da API.
+- **Validação de Dados:** Uso de DTOs e Pipes para garantir que a API receba dados corretos.
 
+## 🛠️ Tecnologias Utilizadas
+
+- **[NestJS](https://nestjs.com/)** - Framework principal de aprendizado.
+- **[TypeScript](https://www.typescriptlang.org/)** - Linguagem base do projeto.
+- **[Prisma](https://www.prisma.io/)** - ORM moderno para interação com o banco de dados.
+- **[SQLite](https://www.sqlite.org/)** - Banco de dados leve, ideal para estudos locais.
+- **[Swagger](https://swagger.io/)** - Documentação interativa da API.
+
+## 🚀 Como Executar o Projeto
+
+### Pré-requisitos
+
+- **Node.js** (v18+)
+- **Yarn** ou **NPM**
+
+### Instalação
+
+1. Clone o repositório:
    ```bash
    git clone https://github.com/jhonatanffelipe/first-project-nest.git
    cd first-project-nest
    ```
 
-2. **Instale as dependências:**
-
+2. Instale as dependências:
    ```bash
-   yarn
+   yarn install
    ```
 
-3. **Configure as variáveis de ambiente:**
-
+3. Configure o ambiente:
    Crie um arquivo `.env` na raiz do projeto:
-
    ```env
    PORT=3000
    DATABASE_URL="file:./dev.db"
    ```
 
-4. **Execute as migrações do banco:**
-
+4. Prepare o banco de dados:
    ```bash
-   npx prisma migrate dev --name init
+   npx prisma migrate dev
    ```
 
-5. **Inicie o servidor:**
-
-   ```bash
-   yarn start:dev
-   ```
-
-A API estará disponível em `http://localhost:3000` e a documentação Swagger em `http://localhost:3000/api/docs`.
-
-## Estrutura do Projeto
-
-```
-src/
-├── app.module.ts                        # Módulo raiz da aplicação
-├── main.ts                              # Bootstrap (Swagger, pipes globais)
-│
-├── common/                              # Utilitários compartilhados entre módulos
-│   ├── dtos/
-│   │   ├── pagination.dto.ts            # Parâmetros de paginação (page, limit, sort)
-│   │   ├── pagination-response.dto.ts   # Wrapper genérico de resposta paginada
-│   │   └── default-filters.dto.ts       # Filtros comuns (filterField, filterValue)
-│   ├── errors/
-│   │   └── app.error.ts                 # AppError: exceção customizada com contexto
-│   └── filtes/
-│       └── http-exception.filter.ts     # Filtro global de exceções HTTP
-│
-├── database/
-│   └── prisma.service.ts                # PrismaService com injeção de dependência
-│
-└── modules/
-    └── team-members/                    # Módulo de membros do time
-        ├── team-members.module.ts
-        ├── dtos/
-        │   ├── create-team-member-body.dto.ts
-        │   └── create-team-member-response.dto.ts
-        ├── repositories/
-        │   ├── team-members.repository.ts           # Contrato abstrato (interface)
-        │   └── prisma/
-        │       └── prisma-team-members.repository.ts # Implementação com Prisma
-        └── use-cases/
-            ├── create-team-member/
-            │   ├── create-team-member.controller.ts
-            │   └── create-team-member.service.ts
-            ├── find-all-team-members/
-            │   ├── find-all-team-members.controller.ts
-            │   └── find-all-team-members.service.ts
-            └── find-team-member-by-id/
-                ├── find-team-member-by-id.controller.ts
-                └── find-team-member-by-id.service.ts
-```
-
-## Arquitetura e Padrões
-
-- **Use Cases:** cada operação de negócio possui seu próprio par controller/service, tornando o código isolado, testável e fácil de estender.
-- **Repository Pattern:** repositórios são definidos como classes abstratas, desacoplando a lógica de negócio da implementação de banco de dados (hoje Prisma, amanhã qualquer outro).
-- **Módulos por domínio:** cada domínio agrupa seus use cases, DTOs e repositórios em um único módulo coeso.
-- **DTOs com validação:** `class-validator` e `class-transformer` validam e tipam as requisições via `ValidationPipe` global.
-- **Tratamento de erros centralizado:** `AppError` e `HttpExceptionFilter` padronizam todas as respostas de erro da API.
-- **Paginação e filtros genéricos:** DTOs reutilizáveis de paginação (`page`, `limit`, `sortBy`, `sortOrder`) e filtragem dinâmica disponíveis para qualquer módulo.
-- **Documentação automática:** Swagger com `@nestjs/swagger`, decoradores `@ApiTags`, `@ApiProperty` e respostas tipadas em todos os endpoints.
-
-## Rotas da API
-
-A documentação completa e interativa de todos os endpoints está disponível via Swagger UI:
-
-**[http://localhost:3000/api/docs](http://localhost:3000/api/docs)**
-
-Lá você encontra todos os recursos, parâmetros, exemplos de request/response e pode testar as rotas diretamente pelo navegador.
-
-## Comandos Úteis
+### Iniciando a Aplicação
 
 ```bash
-# Desenvolvimento com hot-reload
+# Modo de desenvolvimento
 yarn start:dev
-
-# Visualizar o banco de dados no browser
-npx prisma studio
-
-# Gerar o client Prisma após alterar o schema
-npx prisma generate
-
-# Criar nova migration
-npx prisma migrate dev --name <nome-da-migration>
 ```
+
+A API estará rodando em `http://localhost:3000` e a documentação em `http://localhost:3000/api/docs`.
+
+## 🏗️ Estrutura do Projeto
+
+A organização segue os princípios de modularidade aprendidos:
+
+```text
+src/
+├── common/             # Utilitários, DTOs globais e tratamento de erros
+├── database/           # Configuração e serviços do Prisma
+└── modules/
+    └── team-members/   # Domínio de estudo: Membros do Time
+        ├── repositories/ # Onde o Repository Pattern é aplicado
+        └── use-cases/  # Lógica de negócio isolada por operação
+```
+
+## 🧩 Conceitos Aplicados
+
+- **Use Cases:** Cada funcionalidade possui seu próprio contexto, facilitando a manutenção.
+- **Repository Pattern:** Desacoplamento da lógica de negócio da implementação do banco de dados.
+- **Dependency Injection:** Gerenciamento eficiente de dependências pelo NestJS.
+
+## 🗺️ Roadmap de Estudos
+
+- [x] CRUD de Membros do Time
+- [x] Documentação com Swagger
+- [x] Integração com Prisma e SQLite
+- [ ] Implementação de Testes Unitários e Integração
+- [ ] Refinamento de Padrões de Arquitetura
+
+---
+
+<p align="center">
+  🚀 Em constante aprendizado por <a href="https://github.com/jhonatanffelipe">Jhonatan Felipe</a>
+</p>
