@@ -101,7 +101,7 @@ src/
 - [x] Documentação com Swagger
 - [x] Integração com Prisma e SQLite
 - [x] Implementação de Testes Unitários
-- [ ] Implementação de Testes de Integração
+- [ ] Implementação de Testes de Integração (Iniciado: CreateTeamMember)
 - [ ] Refinamento de Padrões de Arquitetura
 
 ---
