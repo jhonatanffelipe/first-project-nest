@@ -100,7 +100,8 @@ src/
 - [x] CRUD de Membros do Time
 - [x] Documentação com Swagger
 - [x] Integração com Prisma e SQLite
-- [ ] Implementação de Testes Unitários e Integração
+- [ ] Implementação de Testes Unitários (Iniciado: CreateTeamMember)
+- [ ] Implementação de Testes de Integração
 - [ ] Refinamento de Padrões de Arquitetura
 
 ---
