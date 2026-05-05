@@ -102,7 +102,6 @@ src/
 - [x] Integração com Prisma e SQLite
 - [x] Implementação de Testes Unitários
 - [x] Implementação de Testes de Integração (E2E)
-- [ ] Refinamento de Padrões de Arquitetura
 
 ---
 
