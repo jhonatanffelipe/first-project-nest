@@ -1,7 +1,6 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as supertest from 'supertest';
-const request = supertest.default || supertest;
+import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/database/prisma.service';
 
@@ -59,24 +58,25 @@ describe('Create Team Member (e2e)', () => {
       function: 'Designer',
     };
 
-    // Criar o primeiro
     await request(app.getHttpServer())
       .post('/team-members')
       .send(body)
       .expect(201);
 
-    // Tentar criar o segundo com mesmo nome
     const response = await request(app.getHttpServer())
       .post('/team-members')
       .send(body)
-      .expect(500); // AppError padrão cai no filtro de exceção
+      .expect(400);
 
-    expect(response.body.message).toBe('A team member with this name already exists.');
+    expect(response.body).toHaveProperty('message');
+    expect((response.body as { message: string }).message).toBe(
+      'A team member with this name already exists.',
+    );
   });
 
   it('/team-members (POST) - should validate request body', async () => {
     const invalidBody = {
-      name: '', // Nome vazio (dependendo da validação no DTO)
+      name: '',
     };
 
     await request(app.getHttpServer())

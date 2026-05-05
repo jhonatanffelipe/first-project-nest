@@ -10,9 +10,17 @@ export class FindAllTeamMembersService {
   constructor(private teamMembersRepository: TeamMembersRepository) {}
 
   public async findAll(
-    pagination: PaginationDto,
-    filter: DefaultFiltersDto,
+    { limit, page, sortBy, sortOrder }: PaginationDto,
+    { filterField, filterValue }: DefaultFiltersDto,
   ): Promise<PaginationResponseDto<TeamMemberResponse>> {
-    return await this.teamMembersRepository.findAll(pagination, filter);
+    return await this.teamMembersRepository.findAll(
+      {
+        limit: limit ?? 10,
+        page: page ?? 1,
+        sortBy: sortBy ?? 'name',
+        sortOrder: sortOrder ?? 'asc',
+      },
+      { filterField, filterValue },
+    );
   }
 }

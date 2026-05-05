@@ -3,7 +3,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 export class AppError extends HttpException {
   constructor(
     message: string,
-    statusCode: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
+    statusCode: HttpStatus = HttpStatus.BAD_REQUEST,
     public readonly context?: string,
     public readonly meta?: Record<string, unknown>,
   ) {
