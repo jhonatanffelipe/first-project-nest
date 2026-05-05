@@ -1,3 +1,4 @@
+import { Test, TestingModule } from '@nestjs/testing';
 import { AppError } from '../../../../common/errors/app.error';
 import { TeamMembersRepository } from '../../repositories/team-members.repository';
 import { CreateTeamMemberService } from './create-team-member.service';
@@ -6,73 +7,56 @@ describe('CreateTeamMemberService', () => {
   let service: CreateTeamMemberService;
   let repository: jest.Mocked<TeamMembersRepository>;
 
-  beforeEach(() => {
-    // Criando um mock manual da classe abstrata
-    repository = {
-      create: jest.fn(),
-      findByName: jest.fn(),
-      findAll: jest.fn(),
-      findById: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-    } as unknown as jest.Mocked<TeamMembersRepository>;
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        CreateTeamMemberService,
+        {
+          provide: TeamMembersRepository,
+          useValue: {
+            create: jest.fn(),
+            findByName: jest.fn(),
+            findAll: jest.fn(),
+            findById: jest.fn(),
+            update: jest.fn(),
+            delete: jest.fn(),
+          },
+        },
+      ],
+    }).compile();
 
-    service = new CreateTeamMemberService(repository);
+    service = module.get<CreateTeamMemberService>(CreateTeamMemberService);
+    repository = module.get(TeamMembersRepository);
   });
 
   it('should be able to create a new team member', async () => {
-    const memberData = {
-      name: 'John Doe',
-      function: 'Developer',
-    };
-
-    const mockCreatedMember = {
-      id: 'any-id',
-      ...memberData,
-    };
+    const body = { name: 'John Doe', function: 'Developer' };
+    const created = { id: 'any-uuid', ...body };
 
     repository.findByName.mockResolvedValue(null);
-    repository.create.mockResolvedValue(mockCreatedMember);
+    repository.create.mockResolvedValue(created);
 
-    const result = await service.create(memberData);
+    const result = await service.create(body);
 
-    expect(repository.findByName).toHaveBeenCalledWith(memberData.name);
-    expect(repository.create).toHaveBeenCalledWith(memberData);
-    expect(result).toEqual(mockCreatedMember);
+    expect(repository.findByName).toHaveBeenCalledTimes(1);
+    expect(repository.findByName).toHaveBeenCalledWith(body.name);
+    expect(repository.create).toHaveBeenCalledTimes(1);
+    expect(repository.create).toHaveBeenCalledWith(body);
+    expect(result).toEqual(created);
   });
 
-  it('should not be able to create a team member with a name that already exists', async () => {
-    const memberData = {
-      name: 'Existing Member',
-      function: 'Designer',
-    };
+  it('should not be able to create a team member with a duplicate name', async () => {
+    const body = { name: 'Existing Member', function: 'Designer' };
 
-    repository.findByName.mockResolvedValue({
-      id: 'existing-id',
-      ...memberData,
+    repository.findByName.mockResolvedValue({ id: 'existing-id', ...body });
+
+    const promise = service.create(body);
+
+    await expect(promise).rejects.toBeInstanceOf(AppError);
+    await expect(promise).rejects.toMatchObject({
+      message: 'A team member with this name already exists.',
     });
 
-    await expect(service.create(memberData)).rejects.toBeInstanceOf(AppError);
-    
     expect(repository.create).not.toHaveBeenCalled();
-  });
-
-  it('should throw AppError with correct message when name exists', async () => {
-    const memberData = {
-      name: 'Existing Member',
-      function: 'Designer',
-    };
-
-    repository.findByName.mockResolvedValue({
-      id: 'existing-id',
-      ...memberData,
-    });
-
-    try {
-      await service.create(memberData);
-    } catch (error) {
-      expect(error).toBeInstanceOf(AppError);
-      expect(error.message).toBe('A team member with this name already exists.');
-    }
   });
 });
